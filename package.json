@@ -1,0 +1,13 @@
+{
+  "name": "agent-j",
+  "version": "1.0.0",
+  "description": "agent-j",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "dotenv": "^16.3.1"
+  }
+}
