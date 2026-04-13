@@ -1,9 +1,9 @@
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+import { execSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
 
 const WORKDIR = process.cwd();
-const ToDoTool = require('./todo');
+import ToDoTool from './todo.js';
 const todoTool = new ToDoTool();
 
 
@@ -16,7 +16,7 @@ function safePath(p) {
     return resolvedPath;
 }
 
-function runBash({ command }) {
+async function runBash({ command }) {
     const dangerous = ["rm -rf /", "sudo", "shutdown", "reboot", "> /dev/"];
     if (dangerous.some(d => command.includes(d))) {
         return "Error: Dangerous command blocked";
@@ -39,7 +39,7 @@ function runBash({ command }) {
     }
 }
 
-function runRead({ filePath, limit }) {
+async function runRead({ filePath, limit }) {
     try {
         const safeFilePath = safePath(filePath);
         const text = fs.readFileSync(safeFilePath, 'utf8');
@@ -54,7 +54,7 @@ function runRead({ filePath, limit }) {
     }
 }
 
-function runWrite({ filePath, content }) {
+async function runWrite({ filePath, content }) {
     try {
         const safeFilePath = safePath(filePath);
         const dirPath = path.dirname(safeFilePath);
@@ -69,7 +69,7 @@ function runWrite({ filePath, content }) {
     }
 }
 
-function runEdit({ filePath, oldText, newText }) {
+async function runEdit({ filePath, oldText, newText }) {
     try {
         const safeFilePath = safePath(filePath);
         const content = fs.readFileSync(safeFilePath, 'utf8');
@@ -86,7 +86,7 @@ function runEdit({ filePath, oldText, newText }) {
 }
 
 
-const TOOLS = [{
+export const tools = [{
     name: "bash",
     description: "Run a shell command.",
     input_schema: { type: "object", properties: { command: { type: "string" } }, required: ["command"] }
@@ -110,13 +110,10 @@ const TOOLS = [{
     }
 }
 ];
-module.exports = {
-    tools: TOOLS,
-    toolHandlers: {
-        bash: runBash,
-        read_file: runRead,
-        write_file: runWrite,
-        edit_file: runEdit,
-        todo: todoTool.update
-    }
-};
+export const toolHandlers = {
+    bash: runBash,
+    read_file: runRead,
+    write_file: runWrite,
+    edit_file: runEdit,
+    todo: todoTool.update
+}

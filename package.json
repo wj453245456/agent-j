@@ -2,6 +2,7 @@
   "name": "agent-j",
   "version": "1.0.0",
   "description": "agent-j",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index.js"

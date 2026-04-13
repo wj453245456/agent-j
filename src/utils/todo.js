@@ -41,4 +41,4 @@ class ToDoTool {
     }
 }
 
-module.exports = ToDoTool
+export default ToDoTool
