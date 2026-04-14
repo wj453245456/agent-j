@@ -3,8 +3,9 @@ import fs from 'fs';
 import path from 'path';
 
 const WORKDIR = process.cwd();
-import ToDoTool from './todo.js';
-const todoTool = new ToDoTool();
+import todoTool from './todo.js';
+import skillLoader from './skillLoader.js';
+
 
 
 function safePath(p) {
@@ -106,14 +107,20 @@ export const tools = [{
 {
     name: "todo", description: "Update task list. Track progress on multi-step tasks.",
     input_schema: {
-        type: "object", properties: { tasks: { type: "array", items: { type: "object" }, properties: { id: { type: "string" }, content: { type: "string" }, status: { type: "string", enum: ["pending", "in_progress", "completed"] } }, required: ["id", "text", "status"] } }, required: ["tasks"]
+        type: "object", properties: { tasks: { type: "array", items: { type: "object" }, properties: { id: { type: "string" }, content: { type: "string" }, status: { type: "string", enum: ["pending", "in_progress", "completed"] } }, required: ["id", "content", "status"] } }, required: ["tasks"]
     }
-}
+},
+{
+    name: "load_skill", description: "Load specialized knowledge by name.",
+    input_schema: { type: "object", properties: { "name": { type: "string", description: "Skill name to load" } }, required: ["name"] }
+},
+
 ];
 export const toolHandlers = {
     bash: runBash,
     read_file: runRead,
     write_file: runWrite,
     edit_file: runEdit,
-    todo: todoTool.update
+    todo: (tasks) => todoTool.update(tasks),
+    load_skill: ({ name }) => skillLoader.getContent({ name }),
 }

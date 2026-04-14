@@ -6,6 +6,9 @@ import agentLoop from './agentLoop.js';
 import { tools, toolHandlers } from './utils/tools.js';
 import { task, taskHandler } from './utils/subAgent.js';
 const WORKDIR = process.cwd();
+import skillLoader from './utils/skillLoader.js';
+
+
 
 
 const rl = readline.createInterface({
@@ -25,8 +28,15 @@ function prompt() {
 
     history.push({ role: "user", content: query });
     //task 主agent 调度子agent
-    const SYSTEM = `You are a coding agent at ${WORKDIR}.Use the task tool to delegate exploration or subtasks`;
-    await agentLoop({ messages: history, system: SYSTEM, tools: [task], toolHandlers: { task: taskHandler } });
+    const SYSTEM = `You are a coding agent at ${WORKDIR}.Use load_skill to access specialized knowledge before tackling unfamiliar topics.
+Skills available:
+${skillLoader.getDescriptions()}"`;
+    await agentLoop({
+      messages: history, system: SYSTEM, tools: tools.concat([task]), toolHandlers: {
+        ...toolHandlers,
+        task: taskHandler
+      }
+    });
     console.log();
     prompt();
   });

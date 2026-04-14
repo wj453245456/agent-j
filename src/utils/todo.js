@@ -41,4 +41,5 @@ class ToDoTool {
     }
 }
 
-export default ToDoTool
+const todoTool = new ToDoTool();
+export default todoTool

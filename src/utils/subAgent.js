@@ -16,6 +16,4 @@ export const taskHandler = async ({ prompt }) => {
     const summary = messages[messages.length - 1]?.content[0]?.text || 'no summary'
     console.log('subAgent summary:', summary)
     return summary
-
-
 }
