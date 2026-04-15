@@ -1,4 +1,7 @@
-import {tools,toolHandlers} from './src/utils/tools.js';
+import {microCompact, autoCompact} from './src/utils/compact.js';
+import fs from 'fs';
 
-// 在Windows中，date命令需要/t参数才能直接显示日期
-console.log(toolHandlers.load_skill({name:"pdf"}))
+const history = JSON.parse(fs.readFileSync('./historyMsg/history.json', 'utf8'));
+const compact = await autoCompact(history);
+console.log(compact)
+fs.writeFileSync('./historyMsg/historyAutopCompact.json', JSON.stringify(compact, null, 2));

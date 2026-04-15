@@ -19,7 +19,7 @@ const rl = readline.createInterface({
 const history = [];
 
 function prompt() {
-  toolHandlers.write_file({ filePath: './history.json', content: JSON.stringify(history, null, 2) });
+  toolHandlers.write_file({ filePath: './historyMsg/history.json', content: JSON.stringify(history, null, 2) });
   rl.question('\x1b[36magent-j: >> \x1b[0m', async (query) => {
     if (query.trim().toLowerCase() === 'q' || query.trim().toLowerCase() === 'exit' || query.trim() === '') {
       rl.close();

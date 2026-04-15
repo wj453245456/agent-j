@@ -12,7 +12,7 @@ export const task = {
 export const taskHandler = async ({ prompt }) => {
     const messages = [{ "role": "user", "content": prompt }]
     await agentLoop({ messages: messages, system: SUBAGENT_SYSTEM, tools, toolHandlers });
-    toolHandlers.write_file({ filePath: './subHistory.json', content: JSON.stringify(messages, null, 2) });
+    toolHandlers.write_file({ filePath: './historyMsg/subHistory.json', content: JSON.stringify(messages, null, 2) });
     const summary = messages[messages.length - 1]?.content[0]?.text || 'no summary'
     console.log('subAgent summary:', summary)
     return summary

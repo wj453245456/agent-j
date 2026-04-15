@@ -114,6 +114,11 @@ export const tools = [{
     name: "load_skill", description: "Load specialized knowledge by name.",
     input_schema: { type: "object", properties: { "name": { type: "string", description: "Skill name to load" } }, required: ["name"] }
 },
+{
+    name: "compact", description: "Trigger manual conversation compression.",
+    input_schema: { type: "object", properties: { "focus": { type: "string", description: "What to preserve in the summary" } }, required: ["focus"] }
+},
+
 
 ];
 export const toolHandlers = {
@@ -123,4 +128,8 @@ export const toolHandlers = {
     edit_file: runEdit,
     todo: (tasks) => todoTool.update(tasks),
     load_skill: ({ name }) => skillLoader.getContent({ name }),
+    compact: ({ focus }) => {
+        console.log(`[compact] ${focus}`);
+        return "Manual compression requested";
+    }
 }

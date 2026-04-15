@@ -2,14 +2,18 @@ import dotenv from 'dotenv';
 dotenv.config({ override: true })
 import Anthropic from '@anthropic-ai/sdk';
 const MODEL = process.env.MODEL_ID;
+import { microCompact, autoCompact, THRESHOLD, estimateTokens } from './utils/compact.js';
 
-
-
+const client = new Anthropic({
+    baseURL: process.env.BASE_URL,
+    apiKey: process.env.API_KEY
+});
 async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tools = [], toolHandlers = {} }) {
-    const client = new Anthropic({
-        baseURL: process.env.BASE_URL,
-        apiKey: process.env.API_KEY
-    });
+    microCompact(messages);
+    if (estimateTokens(messages) > THRESHOLD) {
+        console.log(`[autoCompact] ${estimateTokens(messages)}`);
+        await autoCompact(messages);
+    }
 
     const stream = await client.messages.stream({
         model: MODEL,
@@ -20,6 +24,7 @@ async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tool
     });
     let isToolCall = false;
     let isTodoCall = false;
+    let isManualCompact = false;
     const results = [];
     let messageProcessingPromise = new Promise(resolve => {
 
@@ -41,7 +46,9 @@ async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tool
             for (const block of response.content) {
                 if (block.name === 'todo') {
                     isTodoCall = true;
-                }
+                } else if (block.name === 'compact') {
+                    isManualCompact = true;
+                } 
                 if (!toolHandlers[block.name]) {
                     console.warn(`Unknown tool: ${block.name}`);
                     continue;
@@ -50,6 +57,10 @@ async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tool
                 const output = await toolHandlers[block.name](block.input);
                 console.log(`\x1b[33mToolCall ${block.name} End--resultLen:\x1b[0m${output.length}`);
                 results.push({ type: "tool_result", tool_use_id: block.id, content: output });
+            }
+            if (isManualCompact) {
+                console.log(`[autoCompact] ${estimateTokens(messages)}`);
+                await autoCompact(messages);
             }
             resolve()
         });

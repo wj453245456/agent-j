@@ -1,5 +1,5 @@
 
 node_modules/  
-history.json
 .env
-subHistory.json
+.transcripts/
+.historyMsg/
