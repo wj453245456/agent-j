@@ -6,6 +6,7 @@ const WORKDIR = process.cwd();
 import todoTool from './todo.js';
 import skillLoader from './skillLoader.js';
 
+import { taskHandler, taskTools } from './task.js';
 
 
 function safePath(p) {
@@ -104,12 +105,12 @@ export const tools = [{
     name: "edit_file", description: "Replace exact text in file.",
     input_schema: { type: "object", properties: { filePath: { type: "string" }, old_text: { type: "string" }, new_text: { type: "string" } }, required: ["filePath", "old_text", "new_text"] }
 },
-{
-    name: "todo", description: "Update task list. Track progress on multi-step tasks.",
-    input_schema: {
-        type: "object", properties: { tasks: { type: "array", items: { type: "object" }, properties: { id: { type: "string" }, content: { type: "string" }, status: { type: "string", enum: ["pending", "in_progress", "completed"] } }, required: ["id", "content", "status"] } }, required: ["tasks"]
-    }
-},
+// {
+//     name: "todo", description: "Update task list. Track progress on multi-step tasks.",
+//     input_schema: {
+//         type: "object", properties: { tasks: { type: "array", items: { type: "object" }, properties: { id: { type: "string" }, content: { type: "string" }, status: { type: "string", enum: ["pending", "in_progress", "completed"] } }, required: ["id", "content", "status"] } }, required: ["tasks"]
+//     }
+// },
 {
     name: "load_skill", description: "Load specialized knowledge by name.",
     input_schema: { type: "object", properties: { "name": { type: "string", description: "Skill name to load" } }, required: ["name"] }
@@ -118,6 +119,7 @@ export const tools = [{
     name: "compact", description: "Trigger manual conversation compression.",
     input_schema: { type: "object", properties: { "focus": { type: "string", description: "What to preserve in the summary" } }, required: ["focus"] }
 },
+...taskTools
 
 
 ];
@@ -126,10 +128,11 @@ export const toolHandlers = {
     read_file: runRead,
     write_file: runWrite,
     edit_file: runEdit,
-    todo: (tasks) => todoTool.update(tasks),
+    // todo: (tasks) => todoTool.update(tasks),
     load_skill: ({ name }) => skillLoader.getContent({ name }),
     compact: ({ focus }) => {
         console.log(`[compact] ${focus}`);
         return "Manual compression requested";
-    }
+    },
+    ...taskHandler
 }
