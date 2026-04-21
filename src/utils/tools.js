@@ -7,6 +7,8 @@ import todoTool from './todo.js';
 import skillLoader from './skillLoader.js';
 
 import { taskHandler, taskTools } from './task.js';
+import { backgroundHandler, backgroundTools } from './background.js';
+
 
 
 function safePath(p) {
@@ -119,7 +121,9 @@ export const tools = [{
     name: "compact", description: "Trigger manual conversation compression.",
     input_schema: { type: "object", properties: { "focus": { type: "string", description: "What to preserve in the summary" } }, required: ["focus"] }
 },
-...taskTools
+...taskTools,
+...backgroundTools
+
 
 
 ];
@@ -134,5 +138,6 @@ export const toolHandlers = {
         console.log(`[compact] ${focus}`);
         return "Manual compression requested";
     },
-    ...taskHandler
+    ...taskHandler,
+    ...backgroundHandler
 }

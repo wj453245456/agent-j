@@ -28,7 +28,10 @@ function prompt() {
 
     history.push({ role: "user", content: query });
     //task 主agent 调度子agent
-    const SYSTEM = `You are a coding agent at ${WORKDIR}.Use task tools to plan and track work and use load_skill to access specialized knowledge before tackling unfamiliar topics.
+    const SYSTEM = `You are a coding agent at ${WORKDIR}.
+    Use task tools to plan and track work;
+    Use background_run for long-running commands.
+    Use load_skill to access specialized knowledge before tackling unfamiliar topics.
 Skills available:
 ${skillLoader.getDescriptions()}"`;
     await agentLoop({

@@ -3,12 +3,19 @@ dotenv.config({ override: true })
 import Anthropic from '@anthropic-ai/sdk';
 const MODEL = process.env.MODEL_ID;
 import { microCompact, autoCompact, THRESHOLD, estimateTokens } from './utils/compact.js';
-
+import background from './utils/background.js';
 const client = new Anthropic({
     baseURL: process.env.BASE_URL,
     apiKey: process.env.API_KEY
 });
 async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tools = [], toolHandlers = {} }) {
+    const notifs = background.drainNotifications()
+
+    if (notifs && messages) {
+        const notif_text = notifs.map(n => `[bg:${n['task_id']}] ${n['status']}: ${n['result']}`).join('\n')
+        console.log(notif_text)
+        messages.push({ "role": "user", "content": `<background-results>\n${notif_text}\n</background-results>` })
+    }
     microCompact(messages);
     if (estimateTokens(messages) > THRESHOLD) {
         console.log(`[autoCompact] ${estimateTokens(messages)}`);
@@ -48,7 +55,7 @@ async function agentLoop({ messages = [], unCallTodoRound = 0, system = '', tool
                     isTodoCall = true;
                 } else if (block.name === 'compact') {
                     isManualCompact = true;
-                } 
+                }
                 if (!toolHandlers[block.name]) {
                     console.warn(`Unknown tool: ${block.name}`);
                     continue;
